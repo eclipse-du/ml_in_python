@@ -1,3 +1,6 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
 import matplotlib.pyplot as plt
 import matplotlib.animation as animation
 from mpl_toolkits.mplot3d import Axes3D
@@ -98,7 +101,7 @@ def gradientDescent(X, y, theta, alpha, num_iters):
     #Initialize some useful values
     m = X.shape[0]; 
     X = np.concatenate((np.ones([m,1]), X),1)    
-    J_history = np.zeros(num_iters)
+    #J_history = np.zeros(num_iters)
     theta_history = []
 
     for i in range(0, num_iters):

@@ -1,3 +1,7 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+# author  : eclipse
+# email   : adooadoo@163.com
 
 import pylab as pl
 import numpy as np
