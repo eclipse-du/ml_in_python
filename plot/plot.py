@@ -3,7 +3,6 @@
 # author  : eclipse
 # email   : adooadoo@163.com
 # method  : to plot things
-# way
 
 import pylab as pl
 import numpy as np
