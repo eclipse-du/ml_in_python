@@ -31,9 +31,10 @@ def create_data():
     return data
 
 if __name__ == '__main__':
+    size = 5000
     if not os.path.isdir("data"):
         os.mkdir("data")  
-    for i in xrange(0,2000):
+    for i in xrange(0,size):
         data = create_data()
         file_object = open('data/rawdata_ds_'+str(i)+'.txt', 'w')
         for (a,b) in data:
