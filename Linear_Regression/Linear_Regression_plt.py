@@ -26,7 +26,7 @@ def loadData(in_file):
     in_file   :data source
     ****************************************
     Return:
-    dataArray:data in the type of Array(Numpy)
+    dataArray:data in the type of Array(Numpy.Array)
     """
 
     with open(in_file) as f:
