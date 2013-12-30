@@ -2,7 +2,8 @@
 # -*- coding: utf-8 -*-
 # author  : eclipse
 # email   : adooadoo@163.com
-# method  : to plot things
+# method  : to plot things using pylab
+#           with two classes 
 
 import pylab as pl
 import numpy as np
