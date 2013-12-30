@@ -66,9 +66,13 @@ def decisio_stump_simple(data):
 
 if __name__ == '__main__':
     #data = load_data('rawdata_ds.txt')
-    count = 0.0
+    ein = 0.0
+    eout = 0.0
     for data_file in os.listdir('data'):
     	data = load_data('data/'+data_file)
     	ans = decisio_stump_simple(data)
-        count += ans[2]
-    print count/2000.0
+        ein += ans[2]
+        eout += 0.3*ans[1]*(abs(ans[0])-1)
+    size = len(os.listdir('data'))
+    print ein/size
+    print (eout+size/2.0)/size
