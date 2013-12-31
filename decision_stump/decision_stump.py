@@ -5,9 +5,10 @@
 # email   : adooadoo@163.com
 
 import os
+import numpy as np
 
 
-def load_data(input_file, regex=None):
+def load_data(input_file, regex=','):
     """
     Description:
     load from input_file,spliting with ','
@@ -21,29 +22,29 @@ def load_data(input_file, regex=None):
     """
 
     data = []
-    if regex == None:
-        regex = ','
     with open(input_file) as f:
         data = [[float(x) for x in line.strip(' ').strip('\n'
                 ).split(regex)] for line in f]
     return data
 
 
-def create_Theta(data):
+def create_Theta(data, variable_index):
     """
     Description:
     Create Theta using given data
     ****************************************
     Parameters:
-    data   :data source(list)
+    data           :data source(list)
+    variable_index :give theta in this axix
     ****************************************
     Return:
     thetas:all theta in the type of List
     """
 
-    thetas = [data[0][0] - 0.01] + [(data[i][0] + data[i + 1][0]) / 2
-                                    for i in range(0, len(data) - 1)] \
-        + [data[len(data) - 1][0] + 0.01]
+    thetas = [data[0][variable_index] - 0.01] \
+        + [(data[i][variable_index] + data[i + 1][variable_index])
+           / 2.0 for i in range(0, len(data) - 1)] + [data[len(data)
+            - 1][variable_index] + 0.01]
     return thetas
 
 
@@ -71,24 +72,28 @@ def find_median_value_index(list_data, value):
             step += 1
 
 
-def decisio_stump_single(data):
+def decision_stump(data, variable_index=0):
     """
-....Description:
-....Create Theta using given data
-....****************************************
-....Parameters:
-....data   :data source(list)
-....****************************************
-....Return:
-....thetas:all theta in the type of List
-...."""
+    Description:
+    Create Theta using given data
+    ****************************************
+    Parameters:
+    data           :data source(list)
+    variable_index :using this axix of data
+    ****************************************
+    Return:
+    thetas:all theta in the type of List
+    """
 
     size = len(data)
-    data.sort(key=lambda x: x[0])
-    thetas = create_Theta(data)
-    tmp = [sum([1 for i in xrange(0, size) if data[i][0] < thetas[j]
-           and data[i][1] == -1 or data[i][0] > thetas[j]
-           and data[i][1] == 1]) for j in xrange(0, len(thetas))]
+    y_index = len(data[0])-1
+    data.sort(key=lambda x: x[variable_index])
+    
+    thetas = create_Theta(data, variable_index)
+    tmp = [sum([1 for i in xrange(0, size) if data[i][variable_index]
+           < thetas[j] and data[i][y_index] == -1 or data[i][variable_index]
+           > thetas[j] and data[i][y_index] == 1]) for j in xrange(0,
+           len(thetas))]
     t_max = max(tmp)
     t_min = min(tmp)
     if t_max >= size - t_min:
@@ -96,7 +101,7 @@ def decisio_stump_single(data):
         return [thetas[index], 1, (size - t_max) / (size * 1.0)]
     else:
         index = find_median_value_index(tmp, t_min)
-        return [thetas[index], -1, t_min / size]
+        return [thetas[index], -1, t_min / (size*1.0)]
 
 
 def test_single_ds():
@@ -117,20 +122,39 @@ def test_single_ds():
     eout = 0.0
     for data_file in os.listdir('data'):
         data = load_data('data/' + data_file)
-        ans = decisio_stump_single(data)
+        ans = decision_stump(data)
         ein += ans[2]
         eout += 0.3 * ans[1] * (abs(ans[0]) - 1)
     size = len(os.listdir('data'))
     return (ein / size, (eout + size / 2.0) / size)
 
 
-def test_multi_ds():
-    data = load_data('multi_sc_train.txt', ' ')
-    for i in data:
-        print i
+def test_multi_ds(data):
+    
+    indexs = len(data[0])-1
+    ans = np.array([decision_stump(data,i) for i in xrange(0,indexs)])
+    error_index = ans.shape[1]-1
+    min_error = ans.min(0)[error_index]
+    for i in xrange(0,len(ans)):
+        if ans[i][error_index] == min_error:
+            step = i
+            break
+    return ans[step],step
 
+def test_error(theta,s,variable_index,test_data):
+    size = len(test_data)
+    y_index = len(data[0])-1
+    corret = sum([1 for i in xrange(0, size) if test_data[i][variable_index]
+           < theta and test_data[i][y_index]*s == -1 or test_data[i][variable_index]
+           > theta and test_data[i][y_index]*s == 1])
+    return 1.0*(size-corret)/size
 
 if __name__ == '__main__':
-    print test_single_ds()
+    #print test_single_ds()
+    #test_multi_ds('rawdata_ds.txt')
 
-    # test_multi_ds()
+    data = load_data('multi_sc_train.txt', ' ')
+    [theta,s,e_in],variable_index = test_multi_ds(data)
+    print e_in
+    test_data = load_data('multi_sc_test.txt', ' ')
+    print test_error(theta,s,variable_index,test_data)
