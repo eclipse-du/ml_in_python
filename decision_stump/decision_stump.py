@@ -86,14 +86,14 @@ def decision_stump(data, variable_index=0):
     """
 
     size = len(data)
-    y_index = len(data[0])-1
+    y_index = len(data[0]) - 1
     data.sort(key=lambda x: x[variable_index])
-    
+
     thetas = create_Theta(data, variable_index)
     tmp = [sum([1 for i in xrange(0, size) if data[i][variable_index]
-           < thetas[j] and data[i][y_index] == -1 or data[i][variable_index]
-           > thetas[j] and data[i][y_index] == 1]) for j in xrange(0,
-           len(thetas))]
+           < thetas[j] and data[i][y_index] == -1
+           or data[i][variable_index] > thetas[j] and data[i][y_index]
+           == 1]) for j in xrange(0, len(thetas))]
     t_max = max(tmp)
     t_min = min(tmp)
     if t_max >= size - t_min:
@@ -101,7 +101,7 @@ def decision_stump(data, variable_index=0):
         return [thetas[index], 1, (size - t_max) / (size * 1.0)]
     else:
         index = find_median_value_index(tmp, t_min)
-        return [thetas[index], -1, t_min / (size*1.0)]
+        return [thetas[index], -1, t_min / (size * 1.0)]
 
 
 def test_single_ds():
@@ -111,7 +111,7 @@ def test_single_ds():
     algorithm of single variable sc
     ****************************************
     Parameters:
-    None
+    data  :data source(list)
     ****************************************
     Return:
     ein   : error in the case of ds
@@ -130,31 +130,67 @@ def test_single_ds():
 
 
 def test_multi_ds(data):
-    
-    indexs = len(data[0])-1
-    ans = np.array([decision_stump(data,i) for i in xrange(0,indexs)])
-    error_index = ans.shape[1]-1
+    """
+    Description:
+    Testing my method to implement the
+    algorithm of multiply variable sc
+    ****************************************
+    Parameters:
+    data  :data source(list)
+    ****************************************
+    Return:
+    [theta, s, e_in]  : theta,s is the result we test
+    index             : decision_stump's variable index
+    """
+
+    indexs = len(data[0]) - 1
+    ans = np.array([decision_stump(data, i) for i in xrange(0, indexs)])
+    error_index = ans.shape[1] - 1
     min_error = ans.min(0)[error_index]
-    for i in xrange(0,len(ans)):
+    for i in xrange(0, len(ans)):
         if ans[i][error_index] == min_error:
             step = i
             break
-    return ans[step],step
+    return (ans[step], step)
 
-def test_error(theta,s,variable_index,test_data):
+
+def test_error(
+    theta,
+    s,
+    variable_index,
+    test_data,
+    ):
+    """
+    Description:
+    Testing MVSC given in tets data
+    ****************************************
+    Parameters:
+    theta             : given theta
+    s                 : given s
+    variable_index    : given index of data
+    test_data         : test data
+    ****************************************
+    Return:
+    test_error        : test error of test data
+    """
+
     size = len(test_data)
-    y_index = len(data[0])-1
-    corret = sum([1 for i in xrange(0, size) if test_data[i][variable_index]
-           < theta and test_data[i][y_index]*s == -1 or test_data[i][variable_index]
-           > theta and test_data[i][y_index]*s == 1])
-    return 1.0*(size-corret)/size
+    y_index = len(data[0]) - 1
+    corret = sum([1 for i in xrange(0, size)
+                 if test_data[i][variable_index] < theta
+                 and test_data[i][y_index] * s == -1
+                 or test_data[i][variable_index] > theta
+                 and test_data[i][y_index] * s == 1])
+    return 1.0 * (size - corret) / size
+
 
 if __name__ == '__main__':
-    #print test_single_ds()
-    #test_multi_ds('rawdata_ds.txt')
+
+    # print test_single_ds()
+    # test_multi_ds('rawdata_ds.txt')
 
     data = load_data('multi_sc_train.txt', ' ')
-    [theta,s,e_in],variable_index = test_multi_ds(data)
+    ([theta, s, e_in], variable_index) = test_multi_ds(data)
     print e_in
     test_data = load_data('multi_sc_test.txt', ' ')
-    print test_error(theta,s,variable_index,test_data)
+    print test_error(theta, s, variable_index, test_data)
