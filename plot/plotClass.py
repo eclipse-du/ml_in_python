@@ -1,3 +1,8 @@
+#!/usr/bin/python
+# -*- coding: utf-8 -*-
+
+# author  : eclipse
+# email   : adooadoo@163.com
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 # author  : eclipse
