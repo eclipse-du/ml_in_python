@@ -23,7 +23,7 @@ def loadData(in_file):
 
     with open(in_file) as f:
         data = [line.strip('\n').split(',') for line in f]
-    dataArray = np.matrix(data, dtype=float)
+    dataArray = np.array(data, dtype=float)
     return dataArray
 
 def getLine(xRange, theta):
@@ -88,20 +88,17 @@ def sigmoid(z):
 
 def costFunction(X, y, theta):
     m = X.shape[0]
-    J = 1.0 / m * np.sum(-y.T*np.log(sigmoid(X*theta))-(1-y.T)*np.log(1-sigmoid(X*theta)))
-    grad = 1.0 / m * sum((sigmoid(X*theta)-y).T * X, 1)
+    J = 1.0 / m * np.sum(-y.T*np.log(sigmoid(np.dot(X,theta).T))-(1-y.T)*np.log(1-sigmoid(np.dot(X,theta).T)))
+    grad = 1.0 / m * np.dot(X.T,(sigmoid(np.dot(X,theta).T)-y))
     return J,grad
 
 def f(theta, X, y):
-    theta = scipy.resize(theta,(n,1)) 
-    J = 1.0 / m * np.sum(-y.T*np.log(sigmoid(X*theta))-(1-y.T)*np.log(1-sigmoid(X*theta.reshape([3,1]))))
+    J = 1.0 / m * np.sum(-y.T*np.log(sigmoid(np.dot(X,theta).T))-(1-y.T)*np.log(1-sigmoid(np.dot(X,theta).T)))
     return J
 
 def f_prime(theta, X, y):
     
-    print X.shape,theta.shape
-    grad = 1.0 / m * sum((sigmoid(X*theta)-y).T * X, 1)
-    grad = np.ndarray.flatten(grad)
+    grad = 1.0 / m * np.dot(X.T,(sigmoid(np.dot(X,theta).T)-y))
     return grad
 
 def gradientDescent(
