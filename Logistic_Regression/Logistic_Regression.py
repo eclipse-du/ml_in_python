@@ -6,7 +6,7 @@
 
 import matplotlib.pyplot as plt
 import numpy as np
-
+import scipy.optimize
 
 def loadData(in_file):
     """
@@ -92,6 +92,18 @@ def costFunction(X, y, theta):
     grad = 1.0 / m * sum((sigmoid(X*theta)-y).T * X, 1)
     return J,grad
 
+def f(theta, X, y):
+    theta = scipy.resize(theta,(n,1)) 
+    J = 1.0 / m * np.sum(-y.T*np.log(sigmoid(X*theta))-(1-y.T)*np.log(1-sigmoid(X*theta.reshape([3,1]))))
+    return J
+
+def f_prime(theta, X, y):
+    
+    print X.shape,theta.shape
+    grad = 1.0 / m * sum((sigmoid(X*theta)-y).T * X, 1)
+    grad = np.ndarray.flatten(grad)
+    return grad
+
 def gradientDescent(
     X,
     y,
@@ -123,7 +135,7 @@ def gradientDescent(
         J,grad = costFunction(X, y, theta)
         #print J
         theta = theta - alpha * grad.T 
-    print J
+    #print J
     return theta
 
 if __name__ == '__main__':
@@ -132,11 +144,14 @@ if __name__ == '__main__':
     n = data.shape[1]  # number of feature
     X = data[:, 0:2]
     y = data[:, 2]
-    #X = np.concatenate((np.ones([m, 1]), X), 1)
-    theta = np.zeros([n ,1])
-    iterations = 400000
-    alpha = 0.001
-    theta = gradientDescent(X, y, theta, alpha, iterations)
+    #theta = np.zeros([n ,1])
+    iterations = 4000
+    alpha = 0.0009
+    #theta = gradientDescent(X, y, theta, alpha, iterations)
+    X = np.concatenate((np.ones([m, 1]), X), 1)
+    theta = np.ndarray([0]*n)
+    optimLogit = scipy.optimize.fmin_bfgs(f,theta,f_prime,args=(X,y),gtol = 1e-3)
+    
     #print costFunction(theta, X, y)
-    show_init_image(X, y, theta)
+    #show_init_image(X, y, theta)
 
